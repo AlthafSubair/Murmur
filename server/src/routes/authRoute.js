@@ -3,6 +3,7 @@ import { checkAuth, logIn, logOut, registerEmail, resendOtp, resetPassword, upda
 import validateBody from '../middleware/validateBody.js';
 import { loginValidationRules, otpResendValidation, otpValidationRules, registerValidationRules, resetPasswordValidationRules } from '../validation/authValidation.js';
 import { verifyToken } from '../middleware/verifyToken.js';
+import upload from '../middleware/multer.js';
 
 const router = express.Router();
 
@@ -12,7 +13,7 @@ router.post('/resend-otp', validateBody(otpResendValidation), resendOtp)
 router.post('/reset-password', validateBody(resetPasswordValidationRules), resetPassword)
 router.post('/login', validateBody(loginValidationRules), logIn)
 router.post('/logout', logOut)
-router.put('/update-profile', verifyToken, updateProfile )
+router.put('/update-profile', verifyToken, upload.single('profile') , updateProfile )
 router.get('/check-auth', verifyToken, checkAuth)
 
 export default router;

@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import User from "../models/userModel.js";
 import sendOTP from "../utils/sendOtp.js";
 import jwt from "jsonwebtoken";
+import { cloudinary } from "../config/cloudinary.js";
 
 
 
@@ -235,6 +236,30 @@ export const verifyOtp = async (req, res) => {
   export const updateProfile = async (req, res) => {
     try {
       
+      if(!req.file){
+        return res.status(400).json({ message: "Please upload a profile picture" });
+      }
+
+      const id = req.user._id;
+
+      const user = await User.findById(id);
+
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      if (user.profilePicture.startsWith("https://res.cloudinary.com/diuha1ygf/image/upload/")) {
+        // Extract the public ID correctly by removing the base URL and file extension
+        const publicId = user.profilePicture.split('/').slice(7, -1).join('/'); // Get the public ID part
+        await cloudinary.uploader.destroy(publicId);
+      }
+      
+
+      user.profilePicture = req.file.path;
+      await user.save();
+
+      return res.status(200).json({ message: "Profile picture updated successfully", data: user.profilePicture });
+
     } catch (error) {
       console.log(error);
       return res.status(500).json({ message: "Internal server error" });
