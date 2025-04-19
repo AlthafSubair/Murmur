@@ -2,7 +2,7 @@ import express from 'express';
 import { checkAuth, logIn, logOut, registerEmail, resendOtp, resetPassword, updateProfile, verifyOtp } from '../controllers/authController.js';
 import validateBody from '../middleware/validateBody.js';
 import { loginValidationRules, otpResendValidation, otpValidationRules, registerValidationRules, resetPasswordValidationRules } from '../validation/authValidation.js';
-import { verifyToken } from '../middleware/verifyToken.js';
+import verifyToken  from '../middleware/verifyToken.js';
 import upload from '../middleware/multer.js';
 
 const router = express.Router();

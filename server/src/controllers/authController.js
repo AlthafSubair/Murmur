@@ -27,6 +27,7 @@ try {
 
     await newUser.save();
 
+    const path = 'verify-email';
 
     await sendOTP(newUser.username, newUser.email, newUser.otp, path);
 
@@ -191,7 +192,7 @@ export const verifyOtp = async (req, res) => {
       }
   
       // If the password is correct, generate a JWT token
-      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7h' });
+      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
   
       // Set the token in a cookie
       res.cookie("jwt", token, {

@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/userModel.js'; // Add `.js` if using ES Modules
 
-export const verifyToken = async (req, res, next) => {
+ const verifyToken = async (req, res, next) => {
   try {
     const token = req.cookies.jwt;
 
@@ -28,3 +28,5 @@ export const verifyToken = async (req, res, next) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+export default verifyToken;
