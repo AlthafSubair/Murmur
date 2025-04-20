@@ -1,6 +1,11 @@
 import {create} from 'zustand'
 
-const useThemeStore = create((set) => ({
+interface themeData {
+    theme: string,
+    setTheme: (theme: string) => void
+} 
+
+const useThemeStore = create<themeData>((set) => ({
     theme: localStorage.getItem('chat-theme') || 'night',
     setTheme: (theme: string) => {
         localStorage.setItem('chat-theme', theme)

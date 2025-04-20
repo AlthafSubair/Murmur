@@ -14,17 +14,19 @@ import { Toaster } from 'react-hot-toast'
 import EmailVerificationPage from './pages/EmailVerificationPage'
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
+import useThemeStore from './store/useTemeStore'
 
 function App() {
  
   const { checkAuth, authUser, isCheckingAuth } = useAuthStore()
+  const { theme } = useThemeStore()
 
   useEffect(()=>{
    const res = checkAuth()
    console.log(res)
   },[checkAuth])
 
-  console.log(authUser)
+ 
 
   if(isCheckingAuth && !authUser ){
     return (
@@ -34,8 +36,10 @@ function App() {
     )
   }
 
+  console.log(theme)
+
   return (
-   <div>
+   <div data-theme={theme}>
     <Navbar />
     <Routes>
       <Route path='/' element={authUser ? <HomePage /> : <Navigate to='/login' />}/>
