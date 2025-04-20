@@ -9,6 +9,7 @@ interface AuthUser {
   email: string;
   isVerified: boolean;
   profilePicture: string;
+  createdAt: string;
 }
 
 interface signupData {
@@ -52,6 +53,7 @@ interface AuthState {
   resetPassword: (data: resetPasswordData, email: string) => Promise<boolean>;
   googleAuth: (token: string) => Promise<void>;
   logOutUser: () => Promise<void>;
+  updateProfile: (data: FormData) => Promise<void>;
 }
 
 interface CustomErrorResponse {
@@ -261,6 +263,41 @@ export const useAuthStore = create<AuthState>((set) => ({
       }
     }finally{
       set({ isLoggingOut: false });
+    }
+  },
+  updateProfile: async (data: FormData) => {
+    try {
+      set({ isUpdatingProfile: true });
+
+      const res = await axiosInstance.put("/auth/update-profile", data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (res.data.message) {
+        toast.success(res.data.message);
+      }
+
+      set((state) => ({
+        authUser: {
+          ...state.authUser,
+          ...res.data.data, // Make sure your backend returns `data` with updated user
+        },
+      }));
+      
+
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        const err = error as AxiosError<CustomErrorResponse>;
+        const errorMsg = err.response?.data?.errors?.[err.response?.data?.errors?.length - 1]?.msg || err.response?.data?.message;
+        toast.error(errorMsg || "Error in updating profile");
+      } else {
+        toast.error("Error in updating profile");
+      }
+      
+    }finally{
+      set({ isUpdatingProfile: false });
     }
   }
 
