@@ -6,6 +6,16 @@ import AuthImagePattern from "../components/AuthImagePattern";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Loader2, Lock, Mail, MessageSquare } from "lucide-react";
 import GoogleLoginComponent from "../components/GoogleLoginComponent";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+
+
+export const GoogleAuth = () => {
+  return (
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+      <GoogleLoginComponent />
+    </GoogleOAuthProvider>
+  )
+}
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -23,6 +33,8 @@ const navigate = useNavigate();
       navigate('/verify-email/?path=verify-email')
     }
   };
+
+  
 
   return (
     <div className="h-screen grid lg:grid-cols-2">
@@ -107,7 +119,7 @@ const navigate = useNavigate();
             </button>
           </form>
 
-          <GoogleLoginComponent />
+          <GoogleAuth />
 
           <div className="text-center">
             <p className="text-base-content/60">

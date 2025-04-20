@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuthStore } from "../store/useAuthStore";
 import AuthImagePattern from "../components/AuthImagePattern";
+import { GoogleAuth } from "./LoginPage";
 
 const SignUpPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -137,6 +138,8 @@ const SignUpPage = () => {
               )}
             </button>
           </form>
+
+          <GoogleAuth />
 
           <div className="text-center">
             <p className="text-base-content/60">

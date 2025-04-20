@@ -42,6 +42,7 @@ interface AuthState {
   isVerifyingOtp: boolean;
   isResetingPassword: boolean;
   email: string;
+  isLoggingOut: boolean;
   checkAuth: () => Promise<void>;
   signUp: (data: signupData) => Promise<boolean>;
   resendOtp: (path: string) => Promise<boolean>;
@@ -49,6 +50,8 @@ interface AuthState {
   logIn: (data: loginData) => Promise<{ success: boolean; requiresVerification?: boolean }>;
   setEmail: (email: string) => void;
   resetPassword: (data: resetPasswordData, email: string) => Promise<boolean>;
+  googleAuth: (token: string) => Promise<void>;
+  logOutUser: () => Promise<void>;
 }
 
 interface CustomErrorResponse {
@@ -64,6 +67,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   isCheckingAuth: true,
   isOtpResending: false,
   isVerifyingOtp: false,
+  isLoggingOut: false,
   isResetingPassword: false,
   email: "",
 
@@ -235,7 +239,29 @@ export const useAuthStore = create<AuthState>((set) => ({
     }finally{
       set({ isResetingPassword: false });
     }
-  }
+  },
 
+  googleAuth: (code: string) => axiosInstance.get(`/auth/google?code=${code}`),
+ 
+  logOutUser: async () => {
+    set({ isLoggingOut: true });
+    try {
+      const res = await axiosInstance.post("/auth/logout");
+      if (res.data.message) {
+        toast.success(res.data.message);
+      }
+      set({ authUser: null });
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        const err = error as AxiosError<CustomErrorResponse>;
+        const errorMsg = err.response?.data?.errors?.[err.response?.data?.errors?.length - 1]?.msg || err.response?.data?.message;
+        toast.error(errorMsg || "Error in logging out");
+      } else {
+        toast.error("Error in logging out");
+      }
+    }finally{
+      set({ isLoggingOut: false });
+    }
+  }
 
 }));

@@ -1,5 +1,5 @@
 import express from 'express';
-import { checkAuth, logIn, logOut, registerEmail, resendOtp, resetPassword, updateProfile, verifyOtp } from '../controllers/authController.js';
+import { checkAuth, googleLogin, logIn, logOut, registerEmail, resendOtp, resetPassword, updateProfile, verifyOtp } from '../controllers/authController.js';
 import validateBody from '../middleware/validateBody.js';
 import { loginValidationRules, otpResendValidation, otpValidationRules, registerValidationRules, resetPasswordValidationRules } from '../validation/authValidation.js';
 import verifyToken  from '../middleware/verifyToken.js';
@@ -15,5 +15,6 @@ router.post('/login', validateBody(loginValidationRules), logIn)
 router.post('/logout', logOut)
 router.put('/update-profile', verifyToken, upload.single('profile') , updateProfile )
 router.get('/check-auth', verifyToken, checkAuth)
+router.get('/google', googleLogin)
 
 export default router;

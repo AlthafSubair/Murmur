@@ -3,8 +3,8 @@ import User from "../models/userModel.js";
 import sendOTP from "../utils/sendOtp.js";
 import jwt from "jsonwebtoken";
 import { cloudinary } from "../config/cloudinary.js";
-
-
+import oauth2Client from '../config/googleConfig.js'
+import axios from 'axios'
 
 export const registerEmail = async (req, res) => {
 try {
@@ -193,6 +193,10 @@ if (now > expiresAt) {
       if (!user) {
         return res.status(400).json({ message: "User not found" });
       }
+
+      if(user.provider !== 'local'){
+        return res.status(400).json({ message: "Please login with " + user.provider + " account" });
+      }
   
       // If the user is not verified, send OTP and stop further execution
       if (!user.isVerified) {
@@ -298,3 +302,56 @@ if (now > expiresAt) {
     }
   };
   
+
+  export const googleLogin = async (req, res) => {
+    try {
+
+      const {code} = req.query;
+
+      const googleRes = await oauth2Client.getToken(code);
+
+      oauth2Client.setCredentials(googleRes.tokens);
+      const userRes = await axios.get(
+          `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${googleRes.tokens.access_token}`
+      );
+
+      const { email, name, picture } = userRes.data;
+
+      let user = await User.findOne({ email });
+
+      if(user && user.provider !== 'google'){
+        return res.status(400).json({ message: "Please login with " + user.provider + " account" });
+      }
+
+      if(!user){
+        user = await User.create({
+          username: name,
+          email,
+          profilePicture: picture,
+          isVerified: true,
+          provider: "google"
+        });
+      }
+
+      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+      
+      res.cookie("jwt", token, {
+        maxAge: 7 * 24 * 60 * 60 * 1000,  // 7 days
+        httpOnly: true,
+        sameSite: true,
+        secure: process.env.NODE_ENV === "production",  // Set secure flag in production
+      });
+  
+      return res.status(200).json({ message: "Login successful", data: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        profilePicture: user.profilePicture,
+        isVerified: user.isVerified,
+    }});
+
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  }
