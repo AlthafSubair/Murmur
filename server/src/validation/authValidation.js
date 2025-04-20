@@ -37,7 +37,7 @@ export const otpValidationRules = [
   body('email')
     .isEmail()
     .normalizeEmail()
-    .withMessage('Please enter a valid email address'),
+    .withMessage('Email address is missing or invalid'),
   body('otp')
     .isNumeric()
     .isLength({ min: 6, max: 6 })

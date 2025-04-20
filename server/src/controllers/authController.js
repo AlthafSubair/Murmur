@@ -14,8 +14,9 @@ try {
     const existingUser = await User.findOne({email});
 
     if (existingUser) {
-        return res.status(400).json({message: "User already exists"});
-    }
+      return res.status(409).json({ message: "User already exists" });
+  }
+  
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -55,9 +56,22 @@ export const verifyOtp = async (req, res) => {
     }
 
     if (path === 'verify-email') {
-      if (user.otp !== otp || Date.now() > user.otpExpiresAt) {
-        return res.status(400).json({ message: "Invalid or expired OTP" });
+      console.log(otp, user.otp, user.otpExpiresAt);
+      if (user.otp !== String(otp)) {
+        console.log("Mismatched OTP:", otp, user.otp);
+        return res.status(400).json({ message: "Incorrect OTP" });
       }
+
+      const now = Date.now();
+const expiresAt = new Date(user.otpExpiresAt).getTime();
+
+console.log("Now:", now);
+console.log("OTP Expires At:", expiresAt);
+
+if (now > expiresAt) {
+  console.log("OTP expired");
+  return res.status(400).json({ message: "OTP expired" });
+}
 
       user.isVerified = true;
       user.otp = null;
@@ -68,7 +82,8 @@ export const verifyOtp = async (req, res) => {
 
     } else if (path === 'reset-password') {
      
-      if (user.resetPasswordToken !== otp || Date.now() > user.resetPasswordExpiresAt) {
+      if (user.resetPasswordToken !== String(otp) || Date.now() > user.resetPasswordExpiresAt) {
+        
         return res.status(400).json({ message: "Invalid or expired OTP" });
       }
 
@@ -118,6 +133,7 @@ export const verifyOtp = async (req, res) => {
       } else if (path === 'reset-password') {
         user.resetPasswordToken = otp;
         user.resetPasswordExpiresAt = otpExpiresAt;
+        user.isResetPassword = true;
         await user.save();
   
         // Send OTP email for password reset
@@ -148,10 +164,15 @@ export const verifyOtp = async (req, res) => {
         return res.status(400).json({ message: "User not found" });
       }
 
+      if(!user.isResetPassword){
+        return res.status(400).json({ message: "OTP not verified" });
+      }
+
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
 
       user.password = hashedPassword;
+      user.isResetPassword = false;
       await user.save();
 
       return res.status(200).json({ message: "Password reset successfully" });
@@ -269,7 +290,7 @@ export const verifyOtp = async (req, res) => {
 
   export const checkAuth = async (req, res) => {
     try {
-      console.log(req.user);
+
       res.status(200).json(req.user);
     } catch (error) {
       console.log(error);
