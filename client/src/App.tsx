@@ -22,8 +22,7 @@ function App() {
   const { theme } = useThemeStore()
 
   useEffect(()=>{
-   const res = checkAuth()
-   console.log(res)
+   checkAuth()
   },[checkAuth])
 
  

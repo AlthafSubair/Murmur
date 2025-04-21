@@ -70,6 +70,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   isOtpResending: false,
   isVerifyingOtp: false,
   isLoggingOut: false,
+  onlineUsers: [],
   isResetingPassword: false,
   email: "",
 

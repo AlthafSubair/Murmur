@@ -24,7 +24,6 @@ export const getMessage = async (req, res) => {
 
         const reciverId = new mongoose.Types.ObjectId(reciverParamId);
 
-        console.log(SenderId, reciverId);
 
         const message = await Message.find({
             $or: [
@@ -49,13 +48,18 @@ export const getMessage = async (req, res) => {
 
 export const sendMessage = async (req, res) => {
     try {
-        const { message } = req.body;
+        let { message } = req.body;
+      
+        if (typeof message !== "string") {
+            message = String(message); // prevents CastError
+          }
+    
         const senderId = req.user._id;
         const { id: reciverIdParam } = req.params;
 
         const reciverId = new mongoose.Types.ObjectId(reciverIdParam);
 
-        console.log(senderId, reciverId, message);
+      
 
         if (!message && !req.file) {
             return res.status(400).json({ message: 'Message or image is required' });
