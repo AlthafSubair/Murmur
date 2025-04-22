@@ -29,7 +29,7 @@ const navigate = useNavigate();
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const res = await logIn(formData);
-    if(!res.requiresVerification){
+    if(res.requiresVerification){
       navigate('/verify-email/?path=verify-email')
     }
   };

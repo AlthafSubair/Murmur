@@ -14,23 +14,29 @@ const ChatContainer = () => {
     getMessages,
     isMessagesLoading,
     selectedUser,
+    realTimeMsg,
+    closeRealTimeMsg
   } = useChatStore();
   const { authUser } = useAuthStore();
-  const messageEndRef = useRef(null);
+  const messageEndRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
    if(selectedUser?._id) {
     getMessages(selectedUser._id)
    }
-  }, [selectedUser?._id, getMessages]);
+   realTimeMsg()
+
+   return () => closeRealTimeMsg()
+  }, [selectedUser?._id, getMessages, realTimeMsg, closeRealTimeMsg]);
 
 
 
-//   useEffect(() => {
-//     if (messageEndRef.current && messages) {
-//       messageEndRef.current.scrollIntoView({ behavior: "smooth" });
-//     }
-//   }, [messages]);
+  useEffect(() => {
+    if (messageEndRef.current && messages) {
+      messageEndRef?.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+  
 
   if (isMessagesLoading) {
     return (

@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import axiosInstance from '../lib/axios'
 import toast from 'react-hot-toast'
+import { useAuthStore } from './useAuthStore';
 
 interface userType{
     _id: string,
@@ -27,7 +28,9 @@ interface chatDataType{
  getUsers: () => void,
  getMessages: (userId: string) => void,
  setSelectedUser: (user: userType) => void,
- sendMessage: (message: FormData) => void
+ sendMessage: (message: FormData) => void,
+ realTimeMsg: () => void,
+ closeRealTimeMsg: () => void
 }
 const useChatStore = create<chatDataType>((set, get) => ({
     messages: [], // ✅ fixed typo
@@ -77,6 +80,28 @@ const useChatStore = create<chatDataType>((set, get) => ({
             console.error(error);
             toast.error('Failed to send message');
         }
+    },
+
+    realTimeMsg: () => {
+        const { selectedUser } = get();
+        if(!selectedUser) return;
+
+        const socket = useAuthStore.getState().socket;
+
+
+
+        socket?.on("newMessage", (newMessage) => {
+            const isMessageSentFromSelectedUser = newMessage.senderId === selectedUser._id;
+      if (!isMessageSentFromSelectedUser) return;
+
+            set({ messages: [...get().messages, newMessage] });
+        })
+    },
+
+    closeRealTimeMsg: () => {
+        const socket = useAuthStore.getState().socket;
+        socket?.off("newMessage");
     }
+
 }));
 export default useChatStore;

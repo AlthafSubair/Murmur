@@ -1,6 +1,7 @@
 import User from "../models/userModel.js";
 import Message from "../models/messageModel.js"
 import mongoose from "mongoose";
+import { getReceviersSocketId, io } from "../config/socketio.js";
 
 export const getUsers = async (req, res) => {
     try {
@@ -84,6 +85,12 @@ export const sendMessage = async (req, res) => {
         }
 
         const populatedMessage = await savedMessage
+
+        const receiverSocketId = getReceviersSocketId(reciverId);
+
+        if (receiverSocketId) {
+            io.to(receiverSocketId).emit('newMessage', populatedMessage);
+        }
        
 
         return res.status(200).json(populatedMessage);

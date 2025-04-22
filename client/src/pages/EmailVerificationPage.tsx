@@ -15,7 +15,7 @@ const EmailVerificationPage = () => {
   
   
     const { isOtpResending, resendOtp, verifyOtp, isVerifyingOtp, email} = useAuthStore();
-  const [time, setTime] = useState<number>(10)
+  const [time, setTime] = useState<number>(180)
   const [otp, setOtp] = useState<string>("")
   const [searchParams] = useSearchParams();
   const path: string | null = searchParams.get('path');

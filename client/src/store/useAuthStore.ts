@@ -2,6 +2,9 @@ import { create } from "zustand";
 import axiosInstance from "../lib/axios";
 import toast from "react-hot-toast";
 import axios, { AxiosError } from "axios";
+import { io } from "socket.io-client";
+import { Socket } from "socket.io-client";
+
 
 interface AuthUser {
   _id: string;
@@ -42,8 +45,10 @@ interface AuthState {
   isOtpResending: boolean;
   isVerifyingOtp: boolean;
   isResetingPassword: boolean;
-  email: string;
   isLoggingOut: boolean;
+  email: string;
+  socket: Socket | null;
+  onlineUsers: string[];
   checkAuth: () => Promise<void>;
   signUp: (data: signupData) => Promise<boolean>;
   resendOtp: (path: string) => Promise<boolean>;
@@ -54,14 +59,17 @@ interface AuthState {
   googleAuth: (token: string) => Promise<void>;
   logOutUser: () => Promise<void>;
   updateProfile: (data: FormData) => Promise<void>;
+  connectSocket: () => void;
+  disconnectSocket: () => void;
 }
+
 
 interface CustomErrorResponse {
   errors: { msg: string }[];
   message?: string;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>((set, get) => ({
   authUser: null,
   isSigningUp: false,
   isLogingin: false,
@@ -73,11 +81,13 @@ export const useAuthStore = create<AuthState>((set) => ({
   onlineUsers: [],
   isResetingPassword: false,
   email: "",
+  socket: null,
 
   checkAuth: async () => {
     try {
       const res = await axiosInstance.get("/auth/check-auth");
       set({ authUser: res.data });
+      get().connectSocket()
     } catch (error) {
       console.log("error in checking Auth:", error);
       set({ authUser: null });
@@ -190,6 +200,7 @@ export const useAuthStore = create<AuthState>((set) => ({
         // Store the email for verification purposes
         set({ email: data.email });
         toast.error("Please verify your account")
+        get().connectSocket()
         return { 
           success: false, 
           requiresVerification: true 
@@ -254,6 +265,7 @@ export const useAuthStore = create<AuthState>((set) => ({
         toast.success(res.data.message);
       }
       set({ authUser: null });
+      get().disconnectSocket()
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         const err = error as AxiosError<CustomErrorResponse>;
@@ -300,6 +312,32 @@ export const useAuthStore = create<AuthState>((set) => ({
     }finally{
       set({ isUpdatingProfile: false });
     }
+  },
+
+  connectSocket: () => {
+
+    const { authUser } = get();
+
+
+    if (!authUser || get().socket?.connected) return;
+
+    const socket = io(import.meta.env.VITE_SERVER_URI, {
+      query: {
+        userId: authUser._id,
+      }
+    })
+    socket.connect()
+
+    set({ socket: socket });
+
+    socket.on("onlineUsers", (users) =>{
+      set({ onlineUsers: users })
+    })
+
+  },
+
+  disconnectSocket: () => {
+    if (get().socket?.connected) get()?.socket?.disconnect();
   }
 
 }));
