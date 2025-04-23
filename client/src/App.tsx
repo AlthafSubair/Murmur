@@ -15,6 +15,7 @@ import EmailVerificationPage from './pages/EmailVerificationPage'
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 import useThemeStore from './store/useTemeStore'
+import UserInfo from './pages/UserInfo'
 
 function App() {
  
@@ -49,6 +50,7 @@ function App() {
       <Route path='/reset-password/:email' element={ !authUser ? <ResetPassword /> : <Navigate to='/' />}/>
       <Route path='/settings' element={<SettingsPage />}/>
       <Route path='/profile' element={ authUser ? <ProfilePage /> : <Navigate to='/login' />}/>
+      <Route path='/userinfo/:id' element={ authUser ? <UserInfo /> : <Navigate to='/login' />}/>
     </Routes>
     <Toaster />
    </div>

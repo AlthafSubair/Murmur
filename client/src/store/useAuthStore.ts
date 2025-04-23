@@ -49,6 +49,8 @@ interface AuthState {
   email: string;
   socket: Socket | null;
   onlineUsers: string[];
+  userInfo: AuthUser | null;
+  userinfoLoading: boolean;
   checkAuth: () => Promise<void>;
   signUp: (data: signupData) => Promise<boolean>;
   resendOtp: (path: string) => Promise<boolean>;
@@ -61,6 +63,7 @@ interface AuthState {
   updateProfile: (data: FormData) => Promise<void>;
   connectSocket: () => void;
   disconnectSocket: () => void;
+  fetchUserInfo: (userId: string) => Promise<void>;
 }
 
 
@@ -82,6 +85,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   isResetingPassword: false,
   email: "",
   socket: null,
+  userInfo: null,
+  userinfoLoading: false,
 
   checkAuth: async () => {
     try {
@@ -311,6 +316,27 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       
     }finally{
       set({ isUpdatingProfile: false });
+    }
+  },
+
+  fetchUserInfo: async (userId: string) => {
+    try {
+      set({ userinfoLoading: true });
+
+      const res = await axiosInstance.get(`/auth/profile/${userId}`);
+
+      set({ userInfo: res.data.data });
+      
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const err = error as AxiosError<CustomErrorResponse>;
+        const errorMsg = err.response?.data?.errors?.[err.response?.data?.errors?.length - 1]?.msg || err.response?.data?.message;
+        toast.error(errorMsg || "Error in fetching userinfo");
+      } else {
+        toast.error("Error in fetching userinfo");
+      }
+    }finally{
+      set({ userinfoLoading: false})
     }
   },
 

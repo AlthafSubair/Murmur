@@ -1,4 +1,4 @@
-import { Users } from "lucide-react"
+import { PlusCircle, Users } from "lucide-react"
 import useChatStore from "../store/useChatStore"
 import { useEffect, useState } from "react"
 import SideBarSkeleton from "./SideBarSkeleton"
@@ -43,6 +43,12 @@ const SideBar = () => {
         </label>
         <span className="text-xs text-zinc-500">({onlineUsers.length - 1} online)</span>
       </div>
+    </div>
+
+    <div className="border-b border-base-300 w-full p-5">
+    <button className="flex flex-row items-center gap-2 justify-center cursor-pointer">
+      <PlusCircle /> <span>Create a group</span>
+    </button>
     </div>
 
     <div className="overflow-y-auto w-full py-3">

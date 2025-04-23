@@ -5,6 +5,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import messageRoute from './src/routes/messageRouter.js';
 import { app, server } from './src/config/socketio.js';
+import groupMsgRoute from './src/routes/groupMsgRoute.js';
 
 
 
@@ -25,6 +26,7 @@ app.use(cors({
 
 app.use('/api/auth', authRoute)
 app.use('/api/message', messageRoute)
+app.use('/api/group', groupMsgRoute)
 
 
 const PORT = process.env.PORT || 3000;
