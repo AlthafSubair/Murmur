@@ -1,15 +1,18 @@
 
 
 import ChatContainer from "../components/ChatContainer"
+import GrpChatContainer from "../components/GrpChatContainer"
 import NoChatSelected from "../components/NoChatSelected"
 import SideBar from "../components/SideBar"
 import useChatStore from "../store/useChatStore"
+import useGrpChatStore from "../store/useGrpChatStore"
 
 
 const HomePage = () => {
 
 
 const {selectedUser} = useChatStore()
+const {selectedGroup} = useGrpChatStore()
 
 
   return (
@@ -19,7 +22,8 @@ const {selectedUser} = useChatStore()
           <div className="flex h-full rounded-lg overflow-hidden">
             <SideBar />
 
-           { selectedUser ?  <ChatContainer /> : <NoChatSelected />}
+           {selectedUser ?  <ChatContainer /> :selectedGroup ? <GrpChatContainer />: <NoChatSelected />}
+
           </div>
         </div>
       </div>

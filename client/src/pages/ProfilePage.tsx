@@ -39,12 +39,12 @@ const ProfilePage = () => {
         <div className="flex flex-col items-center gap-4">
           <div className="relative">
             <img
-              src={preview || authUser?.profilePicture || "/avatar.png"}
+              src={preview || authUser?.profilePicture || "https://cdn-icons-png.flaticon.com/512/149/149071.png"}
               alt="Profile"
               className="size-32 rounded-full object-cover border-4 "
               onError={(e) => {
                 e.currentTarget.onerror = null; // Prevent looping
-                e.currentTarget.src = "/avatar.png";
+                e.currentTarget.src = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
               }}
             />
             <label

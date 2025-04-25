@@ -71,8 +71,8 @@ const ChatContainer = () => {
                 <img
                   src={
                     message.senderId === authUser?._id
-                      ? authUser?.profilePicture || "/avatar.png"
-                      : selectedUser?.profilePicture || "/avatar.png"
+                      ? authUser?.profilePicture || "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                      : selectedUser?.profilePicture || "https://cdn-icons-png.flaticon.com/512/149/149071.png"
                   }
                   alt="profile pic"
                 />

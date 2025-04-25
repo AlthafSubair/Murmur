@@ -16,6 +16,8 @@ import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 import useThemeStore from './store/useTemeStore'
 import UserInfo from './pages/UserInfo'
+import CreateGroup from './pages/CreateGroup'
+import GroupInfo from './pages/GroupInfo'
 
 function App() {
  
@@ -51,6 +53,8 @@ function App() {
       <Route path='/settings' element={<SettingsPage />}/>
       <Route path='/profile' element={ authUser ? <ProfilePage /> : <Navigate to='/login' />}/>
       <Route path='/userinfo/:id' element={ authUser ? <UserInfo /> : <Navigate to='/login' />}/>
+      <Route path='/create-group' element={ authUser ? <CreateGroup /> : <Navigate to='/login' />}/>
+      <Route path='/groupinfo/:id' element={ authUser ? <GroupInfo /> : <Navigate to='/login' />}/>
     </Routes>
     <Toaster />
    </div>

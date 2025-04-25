@@ -27,7 +27,7 @@ interface chatDataType{
  messages: ChatMessage[] ,
  getUsers: () => void,
  getMessages: (userId: string) => void,
- setSelectedUser: (user: userType) => void,
+ setSelectedUser: (user: userType | null) => void,
  sendMessage: (message: FormData) => void,
  realTimeMsg: () => void,
  closeRealTimeMsg: () => void
@@ -44,7 +44,7 @@ const useChatStore = create<chatDataType>((set, get) => ({
         try {
             const { data } = await axiosInstance.get('message/users');
             set({ users: data });
-            console.log(data);
+
         } catch (error) {
             console.error(error);
             toast.error('Error while fetching users');
@@ -57,7 +57,7 @@ const useChatStore = create<chatDataType>((set, get) => ({
         set({ isMessagesLoading: true });
         try {
             const { data } = await axiosInstance.get(`/message/${userId}`);
-            console.log(data);
+            
             set({ messages: data }); // ✅ fixed typo
         } catch (error) {
             console.error(error);
@@ -67,7 +67,7 @@ const useChatStore = create<chatDataType>((set, get) => ({
         }
     },
 
-    setSelectedUser: (user: userType) => {
+    setSelectedUser: (user: userType | null) => {
         set({ selectedUser: user });
     },
 
