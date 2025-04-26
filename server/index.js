@@ -9,6 +9,7 @@ import groupMsgRoute from './src/routes/groupMsgRoute.js';
 
 
 
+
 dotenv.config();
 
 
@@ -27,6 +28,8 @@ app.use(cors({
 app.use('/api/auth', authRoute)
 app.use('/api/message', messageRoute)
 app.use('/api/group', groupMsgRoute)
+
+
 
 
 const PORT = process.env.PORT || 3000;

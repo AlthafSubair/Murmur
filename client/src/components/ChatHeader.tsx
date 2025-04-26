@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+import { VideoIcon, X } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
 import useChatStore from "../store/useChatStore";
 import { Link } from "react-router-dom";
@@ -8,7 +8,7 @@ import useGrpChatStore from "../store/useGrpChatStore";
 const ChatHeader = () => {
   const { selectedUser, setSelectedUser } = useChatStore();
   const { onlineUsers } = useAuthStore();
-  const { selectedGroup } = useGrpChatStore()
+  const { selectedGroup, setSelectedGroup } = useGrpChatStore()
 
   return (
     <div className="p-2.5 border-b border-base-300">
@@ -30,10 +30,17 @@ const ChatHeader = () => {
           </div>
         </Link>
 
+
+       <div className="flex gap-8">
+       <Link to={`/vedio-call/${selectedUser._id}`}>
+          <VideoIcon />
+        </Link>
+
         {/* Close button */}
         <button onClick={() => setSelectedUser(null)}>
           <X />
         </button>
+       </div>
       </div>):
       (
         <div className="flex items-center justify-between">
@@ -55,7 +62,7 @@ const ChatHeader = () => {
         </Link>
 
         {/* Close button */}
-        <button onClick={() => setSelectedUser(null)}>
+        <button onClick={() => setSelectedGroup(null)}>
           <X />
         </button>
       </div>

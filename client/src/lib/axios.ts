@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-    baseURL: "http://localhost:3001/api",
+    baseURL: "https://murmur-1eyn.onrender.com/api",
     withCredentials: true
 })
 
