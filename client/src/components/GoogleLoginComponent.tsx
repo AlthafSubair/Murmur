@@ -3,10 +3,12 @@ import { useAuthStore } from "../store/useAuthStore"
 import toast from "react-hot-toast"
 import { useNavigate } from "react-router-dom"
 import axios from "axios";
+
 type AuthResult = {
   code?: string;
-  [key: string]: any; // Accepts any type for dynamic keys
+  [key: string]: string | number | boolean | undefined; // Adjust based on expected values
 };
+
 
 
 
